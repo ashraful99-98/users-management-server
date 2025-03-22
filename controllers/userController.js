@@ -1,18 +1,58 @@
-// const User = require("../models/User");
-
 const user = require("../models/User");
 
+// get all users 
 exports.getUsers = async (req, res) => {
     const users = await user.find().sort({ lastLogin: -1 });
     res.json(users);
 };
 
+// user blocked controller 
 exports.blockUser = async (req, res) => {
-    await user.findByIdAndUpdate(req.params.id, { isBlocked: true });
-    res.json({ message: "User blocked" });
+    try {
+        const updatedUser = await user.findByIdAndUpdate(
+            req.params.id,
+            { isBlocked: true },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({ message: "User blocked successfully", user: updatedUser });
+    } catch (error) {
+        res.status(500).json({ message: "Error blocking user", error: error.message });
+    }
 };
 
+
+
+// user unblocked controller 
+
+exports.unblockUser = async (req, res) => {
+    try {
+        const updatedUser = await user.findByIdAndUpdate(
+            req.params.id,
+            { isBlocked: false },
+            { new: true } // Ensures the updated user is returned
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({ message: "User unblocked successfully", user: updatedUser });
+    } catch (error) {
+        res.status(500).json({ message: "Error unblocking user", error: error.message });
+    }
+};
+
+
+// user delete controller 
 exports.deleteUser = async (req, res) => {
-    await user.findByIdAndDelete(req.params.id);
+    const deleteUser = await user.findByIdAndDelete(req.params.id);
+    if (!deleteUser) {
+        return res.status(404).json({ message: "User already deleted" });
+    }
     res.json({ message: "User deleted" });
 };

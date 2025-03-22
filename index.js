@@ -20,7 +20,8 @@ app.use(cookieParser());
 // CORS configuration
 app.use(
     cors({
-        origin: process.env.ORIGIN || ['http://localhost:3000'], // Use environment variable for flexibility
+        // origin: process.env.ORIGIN || ['http://localhost:3000'], // Use environment variable for flexibility
+        origin: process.env.ORIGIN || 'http://localhost:3000',
         credentials: true,
     })
 );
