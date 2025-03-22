@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+
+// register user controller 
 exports.registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -61,47 +63,6 @@ exports.registerUser = async (req, res) => {
 
 
 // login user
-
-
-// const bcrypt = require("bcryptjs");
-// const jwt = require("jsonwebtoken");
-// const User = require("../models/User");
-
-// exports.loginUser = async (req, res) => {
-//     const { email, password } = req.body;
-
-//     try {
-//         const loginUser = await User.findOne({ email });
-
-//         if (!loginUser || loginUser.isBlocked) {
-//             return res.status(401).json({ message: "Unauthorized" });
-//         }
-
-//         const isMatch = await bcrypt.compare(password, loginUser.password);
-//         if (!isMatch) {
-//             return res.status(400).json({ message: "Invalid credentials" });
-//         }
-
-//         const token = jwt.sign({ id: loginUser._id, name: loginUser.name }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-//         res.cookie("token", token, {
-//             httpOnly: true,
-//             secure: process.env.NODE_ENV === "production",
-//             sameSite: "Strict",
-//         });
-
-//         loginUser.lastLogin = new Date();
-//         await loginUser.save();
-
-//         res.json({ message: "Login successful", user: { id: loginUser._id, name: loginUser.name, email: loginUser.email }, token });
-//     } catch (error) {
-//         res.status(500).json({ message: "Server error", error: error.message });
-//     }
-// };
-
-
-
-
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -117,7 +78,7 @@ exports.loginUser = async (req, res) => {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        const token = jwt.sign({ id: loginUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ id: loginUser._id }, process.env.JWT_SECRET, { expiresIn: "1day" });
 
         res.cookie("token", token, {
             httpOnly: true,

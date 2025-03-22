@@ -14,6 +14,7 @@ module.exports = (req, res, next) => {
     }
 };
 
+
 // middleware/authMiddleware.js
 // const jwt = require("jsonwebtoken");
 // import User from "../models/User";
