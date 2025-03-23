@@ -25,6 +25,7 @@ exports.registerUser = async (req, res) => {
     }
 };
 
+// login user
 // exports.loginUser = async (req, res) => {
 //     const { email, password } = req.body;
 
@@ -40,9 +41,7 @@ exports.registerUser = async (req, res) => {
 //             return res.status(400).json({ message: "Invalid credentials" });
 //         }
 
-
-//         const token = jwt.sign({ id: loginUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
+//         const token = jwt.sign({ id: loginUser._id }, process.env.JWT_SECRET, { expiresIn: "1day" });
 
 //         res.cookie("token", token, {
 //             httpOnly: true,
@@ -50,53 +49,51 @@ exports.registerUser = async (req, res) => {
 //             sameSite: "Strict"
 //         });
 
-
 //         loginUser.lastLogin = new Date();
 //         await loginUser.save();
 
-//         res.json({ message: "Login successful", token, loginUser });
+//         // Ensure user object is correctly returned
+//         res.json({
+//             message: "Login successful",
+//             token,
+//             user: { id: loginUser._id, name: loginUser.name, email: loginUser.email }
+//         });
+
 //     } catch (error) {
 //         res.status(500).json({ message: "Server error", error: error.message });
 //     }
 // };
 
 
-
-// login user
 exports.loginUser = async (req, res) => {
-    const { email, password } = req.body;
-
     try {
-        const loginUser = await User.findOne({ email });
+        const { email, password } = req.body;
 
-        if (!loginUser || loginUser.isBlocked) {
-            return res.status(401).json({ message: "Unauthorized" });
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
 
-        const isMatch = await bcrypt.compare(password, loginUser.password);
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        const token = jwt.sign({ id: loginUser._id }, process.env.JWT_SECRET, { expiresIn: "1day" });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "1d",
+        });
 
+        // Send the token in an HttpOnly cookie
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict"
+            sameSite: "Strict",
+            maxAge: 24 * 60 * 60 * 1000,
         });
 
-        loginUser.lastLogin = new Date();
-        await loginUser.save();
-
-        // Ensure user object is correctly returned
-        res.json({
-            message: "Login successful",
-            token,
-            user: { id: loginUser._id, name: loginUser.name, email: loginUser.email }
-        });
-
+        res.json({ message: "Login successful", user });
     } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
+        res.status(500).json({ message: "Server error" });
     }
 };

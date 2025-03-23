@@ -1,9 +1,9 @@
-const user = require("../models/User");
+const User = require("../models/User");
 const jwt = require('jsonwebtoken');
 
 // get all users 
 exports.getUsers = async (req, res) => {
-    const users = await user.find().sort({ lastLogin: -1 });
+    const users = await User.find().sort({ lastLogin: -1 });
     res.json(users);
 };
 
@@ -34,7 +34,7 @@ exports.getUser = async (req, res) => {
 // user blocked controller 
 exports.blockUser = async (req, res) => {
     try {
-        const updatedUser = await user.findByIdAndUpdate(
+        const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
             { isBlocked: true },
             { new: true }
@@ -53,7 +53,7 @@ exports.blockUser = async (req, res) => {
 // user unblocked controller 
 exports.unblockUser = async (req, res) => {
     try {
-        const updatedUser = await user.findByIdAndUpdate(
+        const updatedUser = await User.findByIdAndUpdate(
             req.params.id,
             { isBlocked: false },
             { new: true }
@@ -71,7 +71,7 @@ exports.unblockUser = async (req, res) => {
 
 // user delete controller 
 exports.deleteUser = async (req, res) => {
-    const deleteUser = await user.findByIdAndDelete(req.params.id);
+    const deleteUser = await User.findByIdAndDelete(req.params.id);
     if (!deleteUser) {
         return res.status(404).json({ message: "User already deleted" });
     }
