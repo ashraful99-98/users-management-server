@@ -3,8 +3,12 @@ const jwt = require('jsonwebtoken');
 
 // get all users 
 exports.getUsers = async (req, res) => {
-    const users = await User.find().sort({ lastLogin: -1 });
-    res.json(users);
+    try {
+        const users = await User.find().sort({ lastLogin: -1 }); // Ensure field name consistency
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching users", error: error.message });
+    }
 };
 
 // get single user 
@@ -32,48 +36,82 @@ exports.getUser = async (req, res) => {
 };
 
 // user blocked controller 
-exports.blockUser = async (req, res) => {
+// exports.blockUser = async (req, res) => {
+//     try {
+//         const updatedUser = await User.findByIdAndUpdate(
+//             req.params.id,
+//             { isBlocked: true },
+//             { new: true }
+//         );
+
+//         if (!updatedUser) {
+//             return res.status(404).json({ message: "User not found" });
+//         }
+
+//         res.json({ message: "User blocked successfully", user: updatedUser });
+//     } catch (error) {
+//         res.status(500).json({ message: "Error blocking user", error: error.message });
+//     }
+// };
+
+// // user unblocked controller 
+// exports.unblockUser = async (req, res) => {
+//     try {
+//         const updatedUser = await User.findByIdAndUpdate(
+//             req.params.id,
+//             { isBlocked: false },
+//             { new: true }
+//         );
+
+//         if (!updatedUser) {
+//             return res.status(404).json({ message: "User not found" });
+//         }
+
+//         res.json({ message: "User unblocked successfully", user: updatedUser });
+//     } catch (error) {
+//         res.status(500).json({ message: "Error unblocking user", error: error.message });
+//     }
+// };
+
+// // user delete controller 
+// exports.deleteUser = async (req, res) => {
+//     const deleteUser = await User.findByIdAndDelete(req.params.id);
+//     if (!deleteUser) {
+//         return res.status(404).json({ message: "User already deleted" });
+//     }
+//     res.json({ message: "User deleted" });
+// };
+
+
+// Block multiple users
+exports.blockUsers = async (req, res) => {
     try {
-        const updatedUser = await User.findByIdAndUpdate(
-            req.params.id,
-            { isBlocked: true },
-            { new: true }
-        );
-
-        if (!updatedUser) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        res.json({ message: "User blocked successfully", user: updatedUser });
+        const { userIds } = req.body;
+        await User.updateMany({ _id: { $in: userIds } }, { isBlocked: true });
+        res.json({ message: "Users blocked successfully" });
     } catch (error) {
-        res.status(500).json({ message: "Error blocking user", error: error.message });
+        res.status(500).json({ message: "Error blocking users", error: error.message });
     }
 };
 
-// user unblocked controller 
-exports.unblockUser = async (req, res) => {
+// Unblock multiple users
+exports.unblockUsers = async (req, res) => {
     try {
-        const updatedUser = await User.findByIdAndUpdate(
-            req.params.id,
-            { isBlocked: false },
-            { new: true }
-        );
-
-        if (!updatedUser) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        res.json({ message: "User unblocked successfully", user: updatedUser });
+        const { userIds } = req.body;
+        await User.updateMany({ _id: { $in: userIds } }, { isBlocked: false });
+        res.json({ message: "Users unblocked successfully" });
     } catch (error) {
-        res.status(500).json({ message: "Error unblocking user", error: error.message });
+        res.status(500).json({ message: "Error unblocking users", error: error.message });
     }
 };
 
-// user delete controller 
-exports.deleteUser = async (req, res) => {
-    const deleteUser = await User.findByIdAndDelete(req.params.id);
-    if (!deleteUser) {
-        return res.status(404).json({ message: "User already deleted" });
+// Delete multiple users
+exports.deleteUsers = async (req, res) => {
+    try {
+        const { userIds } = req.body;
+        await User.deleteMany({ _id: { $in: userIds } });
+        res.json({ message: "Users deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting users", error: error.message });
     }
-    res.json({ message: "User deleted" });
 };
