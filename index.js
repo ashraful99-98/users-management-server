@@ -20,7 +20,6 @@ app.use(cookieParser());
 // CORS configuration
 app.use(
     cors({
-        // origin: process.env.ORIGIN || ['http://localhost:3000'], // Use environment variable for flexibility
         origin: process.env.ORIGIN || 'http://localhost:3000',
         credentials: true,
     })
@@ -55,7 +54,6 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-// const port = process.env.PORT;
 app.listen(port, () => {
     console.log(`Server is running on PORT: ${port}`);
 });

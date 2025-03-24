@@ -64,43 +64,7 @@ exports.loginUser = async (req, res) => {
     }
 };
 
-
-// exports.loginUser = async (req, res) => {
-//     try {
-//         const { email, password } = req.body;
-
-//         const user = await User.findOne({ email });
-
-//         if (!user) {
-//             return res.status(404).json({ message: "User not found" });
-//         }
-
-//         const isMatch = await bcrypt.compare(password, user.password);
-//         if (!isMatch) {
-//             return res.status(400).json({ message: "Invalid credentials" });
-//         }
-
-//         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-//             expiresIn: "1d",
-//         });
-
-//         // Send the token in an HttpOnly cookie
-//         res.cookie("token", token, {
-//             httpOnly: true,
-//             secure: process.env.NODE_ENV === "production",
-//             sameSite: "Strict",
-//             maxAge: 24 * 60 * 60 * 1000,
-//         });
-
-//         res.json({ message: "Login successful", user });
-//     } catch (error) {
-//         res.status(500).json({ message: "Server error" });
-//     }
-// };
-
-
 // user logout 
-
 exports.logoutUser = async (req, res) => {
     try {
         res.clearCookie("token", {
