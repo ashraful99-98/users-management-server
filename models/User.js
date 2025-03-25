@@ -3,10 +3,10 @@ const mongoose = require("mongoose");
 const UserSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
-        email: { type: String, required: true, unique: true }, // Unique index
+        email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
         lastLogin: { type: Date, default: null },
-        status: { type: String, enum: ["active", "blocked"], default: "active" },
+        isBlocked: { type: Boolean, default: false },
     },
     { timestamps: true }
 );
